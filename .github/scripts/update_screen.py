@@ -86,18 +86,20 @@ def panel(y0, label, color, price_str, chg_pct):
     return draw
 
 
-def bullseye_panel(y0, line):
-    cx, cy = 60, y0 + 50
-    draw = [
-        rect(6, y0, 228, 100, PANEL),
-        circle(cx, cy, 34, WHITE),
-        circle(cx, cy, 24, RED),
-        circle(cx, cy, 14, WHITE),
-        circle(cx, cy, 5, RED),
-        text(112, y0 + 30, "MARIA", RED, s=2),
-        text(112, y0 + 58, line, WHITE, s=1),
+def centered(y, v, c, s):
+    return text((240 - len(v) * 6 * s) // 2, y, v, c, s)
+
+
+def bullseye_screen(line):
+    cx, cy = 120, 76
+    return [
+        circle(cx, cy, 54, WHITE),
+        circle(cx, cy, 40, RED),
+        circle(cx, cy, 26, WHITE),
+        circle(cx, cy, 11, RED),
+        centered(152, "MARIA", RED, 3),
+        centered(190, line, WHITE, 2),
     ]
-    return draw
 
 
 def status_badge(y0, is_open):
@@ -108,14 +110,13 @@ def status_badge(y0, is_open):
 
 
 def build_screen(btc_price, btc_chg, imoex_price, imoex_chg, moex_open, egg_line):
-    draw = []
-    draw += panel(8, "BTC", ORANGE, f"${btc_price:,.0f}", btc_chg)
     if egg_line:
-        draw += bullseye_panel(114, egg_line)
-    else:
-        draw += panel(114, "IMOEX", BLUE, f"{imoex_price:,.1f}", imoex_chg)
-        if moex_open is not None:
-            draw.append(status_badge(114, moex_open))
+        return {"bg": BG, "ttl": 600, "draw": bullseye_screen(egg_line)}
+
+    draw = panel(8, "BTC", ORANGE, f"${btc_price:,.0f}", btc_chg)
+    draw += panel(114, "IMOEX", BLUE, f"{imoex_price:,.1f}", imoex_chg)
+    if moex_open is not None:
+        draw.append(status_badge(114, moex_open))
     return {"bg": BG, "ttl": 600, "draw": draw}
 
 
