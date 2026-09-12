@@ -29,6 +29,15 @@ def fetch_imoex():
     }
 
 
+def shot_spark():
+    # Flat "steady hands" baseline, then a sharp spike - like a shot landing dead
+    # center. Small jitter on the baseline so it doesn't look like a flat line bug.
+    n = 18
+    spark = [4 + random.uniform(-0.4, 0.4) for _ in range(n - 2)]
+    spark += [9.5, 10]
+    return spark
+
+
 def easter_egg():
     lines = [
         "PERFECT SCORE",
@@ -42,8 +51,9 @@ def easter_egg():
         "name": "MARIA - " + random.choice(lines),
         "price": 10,
         "currency": "",
-        "change": 0,
-        "changePct": 0,
+        "change": 6,
+        "changePct": 150,
+        "spark": shot_spark(),
         "range": "1D",
         "ok": True,
     }
