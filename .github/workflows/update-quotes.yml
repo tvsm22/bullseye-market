@@ -3,7 +3,12 @@ name: Update IMOEX quote
 on:
   schedule:
     - cron: "*/5 * * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      force_egg:
+        description: "Force-show the easter egg this run (for previewing it)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -15,6 +20,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Fetch MOEX + build quote (occasionally an easter egg)
+        env:
+          FORCE_EGG: ${{ github.event.inputs.force_egg }}
         run: python3 .github/scripts/update.py
 
       - name: Commit and push if changed

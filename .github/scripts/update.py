@@ -53,9 +53,10 @@ def main():
     payload = fetch_imoex()
     print("fetched:", payload, file=sys.stderr)
 
-    if random.random() < 1 / 130:
+    forced = os.environ.get("FORCE_EGG", "").lower() == "true"
+    if forced or random.random() < 1 / 130:
         payload = easter_egg()
-        print("easter egg fired:", payload, file=sys.stderr)
+        print(("forced " if forced else "") + "easter egg fired:", payload, file=sys.stderr)
 
     os.makedirs("quotes", exist_ok=True)
     with open("quotes/imoex.json", "w") as f:
