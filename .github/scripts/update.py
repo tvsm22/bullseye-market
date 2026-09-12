@@ -39,9 +39,9 @@ def easter_egg():
     ]
     return {
         "symbol": "IMOEX",
-        "name": "MARIA — " + random.choice(lines),
+        "name": "MARIA - " + random.choice(lines),
         "price": 10,
-        "currency": "\U0001F3AF",
+        "currency": "",
         "change": 0,
         "changePct": 0,
         "range": "1D",
