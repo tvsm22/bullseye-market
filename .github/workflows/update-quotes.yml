@@ -15,61 +15,16 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Fetch MOEX + build quote (occasionally an easter egg)
-        run: |
-          python3 - <<'PYEOF'
-          import json, random, urllib.request, os
-
-          url = ("https://iss.moex.com/iss/engines/stock/markets/index/securities/"
-                 "IMOEX.json?iss.meta=off&iss.only=marketdata")
-          with urllib.request.urlopen(url, timeout=15) as r:
-              d = json.load(r)["marketdata"]
-          cols = d["columns"]
-          rec = dict(zip(cols, d["data"][0]))
-          price = rec["CURRENTVALUE"] or rec["LASTVALUE"]
-          chg_pct = rec["LASTCHANGEPRC"]
-          chg_abs = rec["LASTCHANGE"]
-
-          payload = {
-              "symbol": "IMOEX",
-              "name": "IMOEX",
-              "price": price,
-              "currency": "",
-              "change": chg_abs,
-              "changePct": chg_pct,
-              "range": "1D",
-              "ok": price is not None,
-          }
-
-          # ~ a couple of times a day at a 5-minute cadence (288 runs/day)
-          if random.random() < 1 / 130:
-              lines = [
-                  "PERFECT SCORE",
-                  "STEADIEST HANDS ALIVE",
-                  "GOLD MEDAL FORM",
-                  "BULLSEYE QUEEN",
-                  "10/10 EVERY TIME",
-              ]
-              payload = {
-                  "symbol": "IMOEX",
-                  "name": "MARIA — " + random.choice(lines),
-                  "price": 10,
-                  "currency": "\U0001F3AF",
-                  "change": 0,
-                  "changePct": 0,
-                  "range": "1D",
-                  "ok": True,
-              }
-
-          os.makedirs("quotes", exist_ok=True)
-          with open("quotes/imoex.json", "w") as f:
-              json.dump(payload, f)
-          print(payload)
-          PYEOF
+        run: python3 .github/scripts/update.py
 
       - name: Commit and push if changed
         run: |
           git config user.name "quotes-bot"
           git config user.email "actions@users.noreply.github.com"
           git add quotes/imoex.json
-          git diff --cached --quiet || git commit -m "update quote"
-          git push
+          if git diff --cached --quiet; then
+            echo "no change"
+          else
+            git commit -m "update quote"
+            git push
+          fi
