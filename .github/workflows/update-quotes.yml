@@ -1,4 +1,4 @@
-name: Update IMOEX quote
+name: Push screen to SmallTV
 
 on:
   schedule:
@@ -10,28 +10,15 @@ on:
         type: boolean
         default: false
 
-permissions:
-  contents: write
-
 jobs:
-  update:
+  push-screen:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch MOEX + build quote (occasionally an easter egg)
+      - run: pip install --quiet paho-mqtt
+
+      - name: Build the screen and publish it over MQTT
         env:
           FORCE_EGG: ${{ github.event.inputs.force_egg }}
-        run: python3 .github/scripts/update.py
-
-      - name: Commit and push if changed
-        run: |
-          git config user.name "quotes-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add quotes/imoex.json
-          if git diff --cached --quiet; then
-            echo "no change"
-          else
-            git commit -m "update quote"
-            git push
-          fi
+        run: python3 .github/scripts/update_screen.py
